@@ -10,7 +10,7 @@
     ],
     "require": {
         "php": ">=5.3.7",
-        "wms/business-rules-engine": "dev-master",
+        "wms/business-rules-engine": "*",
         "symfony/dependency-injection": "~2.2",
         "symfony/doctrine-bridge": "~2.4"
     },
