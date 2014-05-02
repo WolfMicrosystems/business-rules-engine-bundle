@@ -1,4 +1,4 @@
-business-rules-engine-bundle
-============================
+BusinessRulesEngineBundle
+=========================
 
 Business Rules Engine Bundle for Symfony2
