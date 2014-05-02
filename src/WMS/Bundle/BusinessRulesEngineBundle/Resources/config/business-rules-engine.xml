@@ -1,0 +1,55 @@
+<?xml version="1.0" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <parameters>
+        <parameter key="wms.business_rules_engine.class">WMS\Library\BusinessRulesEngine\RulesEngine</parameter>
+        <parameter key="wms.business_rules_engine.options.rule_collection_dumper_class">WMS\Library\BusinessRulesEngine\Dumper\PhpRuleCollectionDumper</parameter>
+        <parameter key="wms.business_rules_engine.options.rule_collection_cache_class">%wms.business_rules_engine.cache_class_prefix%WMSBusinessRuleCollection</parameter>
+        <parameter key="wms.business_rules_engine.loader.class">Symfony\Component\Config\Loader\DelegatingLoader</parameter>
+        <parameter key="wms.business_rules_engine.loader.xml.class">WMS\Library\BusinessRulesEngine\Loader\XmlFileLoader</parameter>
+        <parameter key="wms.business_rules_engine.loader.yml.class">WMS\Library\BusinessRulesEngine\Loader\YamlFileLoader</parameter>
+        <parameter key="wms.business_rules_engine.parser_cache.file.class">Doctrine\Common\Cache\FilesystemCache</parameter>
+        <parameter key="wms.business_rules_engine.parser_cache.class">Symfony\Bridge\Doctrine\ExpressionLanguage\DoctrineParserCache</parameter>
+        <parameter key="wms.business_rules_engine.resolver.class">Symfony\Component\Config\Loader\LoaderResolver</parameter>
+    </parameters>
+
+    <services>
+        <service id="wms.business_rules_engine.resolver" class="%wms.business_rules_engine.resolver.class%" public="false" />
+
+        <service id="wms.business_rules_engine.loader.xml" class="%wms.business_rules_engine.loader.xml.class%" public="false">
+            <tag name="wms.business_rules_engine.loader" />
+            <argument type="service" id="file_locator" />
+        </service>
+
+        <service id="wms.business_rules_engine.loader.yml" class="%wms.business_rules_engine.loader.yml.class%" public="false">
+            <tag name="wms.business_rules_engine.loader" />
+            <argument type="service" id="file_locator" />
+        </service>
+
+        <service id="wms.business_rules_engine.loader" class="%wms.business_rules_engine.loader.class%">
+            <argument type="service" id="wms.business_rules_engine.resolver" />
+        </service>
+
+        <service id="wms.business_rules_engine.parser_cache.file" class="%wms.business_rules_engine.parser_cache.file.class%" public="false">
+            <argument>%kernel.cache_dir%/wms_business_rules_engine</argument>
+        </service>
+
+        <service id="wms.business_rules_engine.parser_cache" class="%wms.business_rules_engine.parser_cache.class%" public="false">
+            <argument type="service" id="wms.business_rules_engine.parser_cache.file" />
+        </service>
+
+        <service id="wms.business_rules_engine" class="%wms.business_rules_engine.class%">
+            <argument type="service" id="wms.business_rules_engine.loader" />
+            <argument>%wms.business_rules_engine.resource%</argument>
+            <argument type="service" id="wms.business_rules_engine.parser_cache" />
+            <argument type="collection">
+                <argument key="cache_dir">%kernel.cache_dir%</argument>
+                <argument key="debug">%kernel.debug%</argument>
+                <argument key="rule_collection_dumper_class">%wms.business_rules_engine.options.rule_collection_dumper_class%</argument>
+                <argument key="rule_collection_cache_class">%wms.business_rules_engine.options.rule_collection_cache_class%</argument>
+            </argument>
+        </service>
+    </services>
+</container>
